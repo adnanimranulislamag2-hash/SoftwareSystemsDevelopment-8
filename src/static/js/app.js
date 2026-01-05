@@ -1,7 +1,17 @@
 function App() {
     const { Container, Row, Col } = ReactBootstrap;
+
     return (
-        <Container>
+        <Container className="app-fade-in">
+            <Row className="mb-4">
+                <Col className="text-center">
+                    <h2 className="fw-bold">
+                        ToDo App by Adnan Imran
+                    </h2>
+                    <p className="text-muted">ID: 2511406</p>
+                </Col>
+            </Row>
+
             <Row>
                 <Col md={{ offset: 3, span: 6 }}>
                     <TodoListCard />
@@ -47,14 +57,18 @@ function TodoListCard() {
         [items],
     );
 
-    if (items === null) return 'Loading...';
+    if (items === null) return <p className="text-center">Loading...</p>;
 
     return (
         <React.Fragment>
             <AddItemForm onNewItem={onNewItem} />
+
             {items.length === 0 && (
-                <p className="text-center">No items yet! Add one above!</p>
+                <p className="text-center fade-in">
+                    No items yet! Add one above!
+                </p>
             )}
+
             {items.map(item => (
                 <ItemDisplay
                     item={item}
@@ -76,6 +90,7 @@ function AddItemForm({ onNewItem }) {
     const submitNewItem = e => {
         e.preventDefault();
         setSubmitting(true);
+
         fetch('/items', {
             method: 'POST',
             body: JSON.stringify({ name: newItem }),
@@ -90,21 +105,19 @@ function AddItemForm({ onNewItem }) {
     };
 
     return (
-        <Form onSubmit={submitNewItem}>
-            <InputGroup className="mb-3">
+        <Form onSubmit={submitNewItem} className="mb-3 fade-in">
+            <InputGroup>
                 <Form.Control
                     value={newItem}
                     onChange={e => setNewItem(e.target.value)}
                     type="text"
                     placeholder="New Item"
-                    aria-describedby="basic-addon1"
                 />
                 <InputGroup.Append>
                     <Button
                         type="submit"
                         variant="success"
-                        disabled={!newItem.length}
-                        className={submitting ? 'disabled' : ''}
+                        disabled={!newItem.length || submitting}
                     >
                         {submitting ? 'Adding...' : 'Add Item'}
                     </Button>
@@ -137,37 +150,38 @@ function ItemDisplay({ item, onItemUpdate, onItemRemoval }) {
     };
 
     return (
-        <Container fluid className={`item ${item.completed && 'completed'}`}>
+        <Container
+            fluid
+            className={`item slide-fade ${
+                item.completed ? 'completed' : ''
+            }`}
+        >
             <Row>
                 <Col xs={1} className="text-center">
                     <Button
-                        className="toggles"
                         size="sm"
                         variant="link"
                         onClick={toggleCompletion}
-                        aria-label={
-                            item.completed
-                                ? 'Mark item as incomplete'
-                                : 'Mark item as complete'
-                        }
                     >
                         <i
-                            onClick={toggleCompletion}
                             className={`far ${
-                                item.completed ? 'fa-check-square' : 'fa-square'
+                                item.completed
+                                    ? 'fa-check-square'
+                                    : 'fa-square'
                             }`}
                         />
                     </Button>
                 </Col>
+
                 <Col xs={10} className="name">
                     {item.name}
                 </Col>
-                <Col xs={1} className="text-center remove">
+
+                <Col xs={1} className="text-center">
                     <Button
                         size="sm"
                         variant="link"
                         onClick={removeItem}
-                        aria-label="Remove Item"
                     >
                         <i className="fa fa-trash text-danger" />
                     </Button>
